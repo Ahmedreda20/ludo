@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Grandstander:wght@200;400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="assets/css/icofont.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@2"></script>
+    <title>Document</title>
+    <style>
+      html,
+      body {
+        font-family: 'Grandstander', cursive;
+      }
+      .item {
+        position: relative;
+      }
+      .item[data-end]:not([data-end='']):before {
+        position: absolute;
+        content: '\e098';
+        display: inline-block;
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+      }
+      .item[data-safe]:not([data-safe='']):before {
+        position: absolute;
+        content: '\f5c0';
+        display: inline-block;
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+      }
+      .item [data-title]:not([data-title='']):after,
+      .item[data-end]:not([data-end='']):after,
+      .item[data-safe]:not([data-safe='']):after {
+        position: absolute;
+        background-color: #134e4a;
+        color: #ffffff;
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 2px;
+        bottom: calc(100% + 10px);
+        left: 50%;
+        z-index: 2;
+        transition: 0.2s linear;
+        -webkit-transition: 0.2s linear;
+        -moz-transition: 0.2s linear;
+        transform: translateY(10px) translateX(-50%);
+        -webkit-transform: translateY(10px) translateX(-50%);
+        -moz-transform: translateY(10px) translateX(-50%);
+        pointer-events: none;
+        opacity: 0;
+        white-space: nowrap;
+        visibility: hidden;
+      }
+      .item[data-end]:not([data-end='']):hover:after,
+      .item [data-title]:not([data-title='']):hover:after,
+      .item[data-safe]:not([data-safe='']):hover:after {
+        transform: translateY(0px) translateX(-50%);
+        -webkit-transform: translateY(0px) translateX(-50%);
+        -moz-transform: translateY(0px) translateX(-50%);
+        pointer-events: auto;
+        opacity: 1;
+        visibility: visible;
+      }
+    </style>
+  </head>
+  <body class="bg-teal-700">
+    <div id="app">
+      <section class="w-full pt-10 pb-4 space-y-10 w-[1480px] mx-auto">
+        <header class="w-full text-center text-white">
+          <h1 class="text-6xl font-bold">
+            <!-- <i class="fa-solid fa-staff-aesculapius"></i> -->
+
+            <i class="fa-solid fa-grip"></i>
+          </h1>
+          <h2 class="text-3xl font-bold">Snake Game</h2>
+          <p class="text-sm font-medium text-slate-200">Simple game as ludo</p>
+        </header>
+        <main class="w-full">
+          <div class="grid grid-cols-10">
+            <figure
+              class="w-full h-24 border-2 border-teal-800 bg-white bg-white py-8 px-10 item flex items-center justify-center text-slate-600 before:text-2xl"
+              :class="{
+                'bg-orange-600 !text-white border-orange-300 after:content-[attr(data-end)]': i === cards.length - 1,
+                'bg-slate-200 !text-slate-500 border-teal-500 after:content-[attr(data-safe)]': item.is_safe 
+            }"
+              v-for="(item, i) in cards"
+              :key="i"
+              :data-index="i"
+              :data-end="i === cards.length - 1 && 'end'"
+              :data-safe="item.is_safe && 'safe'"
+            >
+              <div class="text-4xl text-sky-600 relative -translate-y-2 block reltiave after:content-[attr(data-title)]" data-title="User Ludo" v-if=" i === userIndex " data-type="user">
+                <i class="fa-solid fa-map-marker-alt"></i>
+              </div>
+              <div class="text-4xl text-red-500 relative -translate-y-2 block reltiave after:content-[attr(data-title)]" data-title="User Ludo" v-if=" i === pcIndex " data-type="pc">
+                <i class="fa-solid fa-map-marker-alt"></i>
+              </div>
+            </figure>
+          </div>
+        </main>
+        <footer class="w-full flex items-center gap-6">
+          <div>
+            <figure class="flex items-center gap-5">
+              <figcaption>
+                <div class="w-14 h-14 rounded-full flex items-center justify-center bg-teal-800">
+                  <i class="fa-solid fa-user fa-lg text-white"></i>
+                </div>
+              </figcaption>
+              <blockquote class="flex-1 text-white">
+                <h2 class="text-xl font-bold">{{ username }}</h2>
+                <p class="text-sm font-medium text-slate-200">Count: <span class="text-xl font-bold">{{ userIndex + 1 }}</span></p>
+              </blockquote>
+            </figure>
+          </div>
+          <div class="flex-1">
+            <div class="table mx-auto">
+              <div class="flex flex-col gap-4 items-center justify-center">
+                <div>
+                  <div class="w-20 h-20 rounded-lg bg-teal-800 flex items-center justify-center">
+                    <button class="w-10 h-10 rounded-md bg-white ring-4 ring-teal-900 flex items-center justfiy-center hover:-translate-y-1 animate-bounce focus:[animation-play-state:paused;] disabled:opacity-70" @click.prevent="startRotate" ref="cubeBtn">
+                      <div class="w-full h-full flex flex-wrap items-center justify-center p-2">
+                        <span class="p-0.5 flex items-center justify-center" v-for="cube in cubes" :key="cube">
+                          <span class="w-1 h-1 rounded-full table bg-teal-800"></span>
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <h2 class="text-xs font-bold text-white">Press on cube</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <figure class="flex items-center flex-row-reverse text-right gap-5">
+              <figcaption>
+                <div class="w-14 h-14 rounded-full flex items-center justify-center bg-teal-800">
+                  <i class="fa-solid fa-robot fa-lg text-white"></i>
+                </div>
+              </figcaption>
+              <blockquote class="flex-1 text-white">
+                <h2 class="text-xl font-bold">Bot</h2>
+                <p class="text-sm font-medium text-slate-200">Count: <span class="text-xl font-bold">{{ pcIndex + 1 }}</span></p>
+              </blockquote>
+            </figure>
+          </div>
+        </footer>
+      </section>
+    </div>
+  </body>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          cubes: 6,
+          userIndex: 0,
+          pcIndex: 0,
+          cards: [],
+          username: null,
+        };
+      },
+      created() {
+        this.collectCards();
+        const name = prompt('Enter your name to start the game:');
+        this.username = name;
+        window.addEventListener('keydown', (e) => {
+          console.log(e);
+          if (e.code === 'Space') {
+            console.log('lo');
+          }
+        });
+      },
+      watch: {
+        userIndex() {
+          if (this.userIndex >= 60) {
+            this.userIndex = 60;
+          }
+        },
+        pcIndex() {
+          if (this.pcIndex >= 60) {
+            this.pcIndex = 60;
+          }
+        },
+      },
+      methods: {
+        startRotate(e) {
+          let index = 1;
+          const btn = this.$refs.cubeBtn;
+          btn.classList.remove('animate-bounce');
+          btn.setAttribute('disabled', 'disabled');
+          const interVal = setInterval(() => {
+            index++;
+            if (index > 6) {
+              index += -index;
+            }
+            if (index === 0) index = 1;
+            this.cubes = index;
+          }, 70);
+
+          setTimeout(() => {
+            clearInterval(interVal);
+            let generateNumber = Math.floor(Math.random() * 6);
+            this.cubes = generateNumber === 0 ? 1 : generateNumber;
+            if (e) {
+              this.userIndex += this.cubes;
+              this.playSound('user');
+            } else {
+              this.playSound('bot');
+              this.pcIndex += this.cubes;
+              clearTimeout(time);
+              btn.removeAttribute('disabled');
+              btn.classList.add('animate-bounce');
+            }
+            // check if user index and pc index with the same value and if user index not match card safe index
+            if (this.userIndex === this.pcIndex) {
+              this.userIndex = 0;
+              this.playSound('loser');
+            }
+            if (this.pcIndex === this.userIndex) {
+              this.userIndex = 0;
+              this.playSound('loser');
+            }
+            // this.findSafeCardIndex(this.userIndex).id !== this.userIndex
+            // check if user or pc their value is 60
+            this.checkTheEnd();
+          }, 2000);
+          //  pc turn after 3sec
+          const time = setTimeout(() => {
+            this.startRotate();
+          }, 3000);
+        },
+        collectCards() {
+          let arr = [];
+          let newCarts = this.createCards({ is_safe: false }, 60);
+        },
+        createCards(elem, size) {
+          let arr = Array(size)
+            .fill('')
+            .map((_, i) => {
+              return { ...elem, id: i + 1 };
+            });
+          const randomArr = this.getMultiRandom(arr, 4);
+          const finalArr = arr.map((e, i) => {
+            const item = randomArr.find((el) => el.id !== 60 && el.id == e.id);
+            return item === e ? { ...e, is_safe: true } : { ...e, is_safe: false };
+          });
+          this.cards = finalArr;
+        },
+        getMultiRandom(arr, size) {
+          return [...arr].sort(() => 0.5 - Math.random()).slice(0, size);
+        },
+        findSafeCardIndex(i) {
+          const safeArr = this.cards.filter((e) => e.is_safe);
+          return safeArr.find((e) => e.id === i + 1);
+        },
+        checkTheEnd() {
+          if (this.userIndex >= 60) {
+            this.playSound('done');
+            this.userIndex = 60;
+          } else if (this.pcIndex >= 60) {
+            this.pcIndex = 60;
+            this.playSound('loser');
+          }
+          if (this.userIndex === 60 || this.pcIndex === 60)
+            setTimeout(() => {
+              window.location.reload();
+            }, 500);
+        },
+        playSound(name) {
+          const audio = new Audio();
+          audio.srcObject = null;
+          audio.src = `${window.location.origin}/assets/sounds/${name}.mp3`;
+          audio.load();
+          audio.play();
+        },
+      },
+    });
+  </script>
+</html>
